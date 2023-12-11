@@ -1,53 +1,39 @@
 #include <iostream>
+#include <array>
+#include <stack>
+#include <string>
 
-#include <SDL.h>
-
+// #include <SDL.h>
 
 int main(int argc, char* argv[]) {
 
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        std::cout << "SDL_Init(SDL_INIT_VIDEO) returned error: " << SDL_GetError() << "\n";  
-        return -1;  
-    } else {
-        std::cout << "SDL video system initialized\n";
-    }
-
-    SDL_Window* window = nullptr;
-
-    window = SDL_CreateWindow("C++ SDL MacOS Window", 0, 0, 640, 480, SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
-    if (window == nullptr) {
-        std::cout << "Failed to create window\n";
+    if (argc != 2) {
+        std::cout << "Please run this program as " << argv[0] << " <filename>\n"; 
         return -1;
-    }
-
-    bool is_running = true;
-    while (is_running) {
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            switch (event.type) {
-                case SDL_QUIT:
-                    is_running = false;
-                    break;
-                case SDL_KEYDOWN:
-                    switch (event.key.keysym.scancode) {
-                        case SDL_SCANCODE_1:
-                            std::cout << "you pressed number 1\n";
-                            break;
-                        case SDL_SCANCODE_ESCAPE:
-                        case SDL_SCANCODE_Q:
-                            is_running = false;
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                default:
-                    break;
-            }
+    } else {
+        std::string filename(argv[1]);
+        if (filename.size() <= 4 || filename.substr(filename.size()-4, 4) != ".ch8") {
+            std::cout << "Please provide a .ch8 file\n";
+            return -1;
         }
-
     }
+    /* Init our virtual RAM + V0-VF registers for the interpreter */
+    std::array<uint8_t, 4096> V_RAM{{0}};
+    std::array<uint8_t, 16> V_REG{{0}};
+    // represents a 64-bit by 32-bit pixel raster
+    // outer array is row, inner array is col -> grouped into bytes of 8 pixels
+    std::array<std::array<uint8_t, 8>,4> DISPLAY{{0}};
 
-    SDL_DestroyWindow(window);
+    // todo: how are we going to store the display?
+    uint16_t I = 0x200;
+    uint16_t PC = 0x200;
+
+    //todo: figure out logic for these timers
+    uint8_t delay = UINT8_MAX;
+    uint8_t sound = UINT8_MAX;
+
+    std::stack<uint16_t> call_stack;
+
+    //todo: load in program memory starting at index 0x200 in V_MEM -> how to do that?
     return 0;
 }
