@@ -27,7 +27,6 @@ int main(int argc, char* argv[]) {
     // outer array is row, inner array is col -> grouped into bytes of 8 pixels
     std::array<std::array<char, 8>,4> DISPLAY{{0}};
 
-    // todo: how are we going to store the display?
     uint16_t I = 0x200;
     uint16_t PC = 0x200;
 
@@ -45,8 +44,9 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
+    //todo: maybe some check to see that the file isnt too big -> it shouldnt ever be but to stop malicious intent
     std::copy(std::istreambuf_iterator<char>{stream}, {}, V_RAM.begin() + 0x200);
     stream.close();
-    
+
     return 0;
 }
